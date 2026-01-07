@@ -1,37 +1,53 @@
 {% extends "base.html" %}
-{% load static %}
+
+{% block title %}About | IoT Accident Detection{% endblock %}
 
 {% block content %}
-<!-- About Section Begin -->
-<section class="about spad">
-    <div class="container">
-        <div class="row">
-            <!-- Left side image or video -->
-            <div class="col-lg-6 col-md-6">
-                <div class="about__video set-bg" data-setbg="https://enablecomp.com/wp-content/uploads/2024/01/EnableComp-Image-VA-BlogPost1.jpg">
-                </div>
-            </div>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">About This Project</h2>
 
-            <!-- Right side content -->
-            <div class="col-lg-6 col-md-6">
-                <div class="about__text">
-                    <div class="section-title">
-                        <span>ABOUT THE SYSTEM</span>
-                        <h2>AI-Powered Clinical Prediction Platform</h2>
-                    </div>
-                    <p>
-                        This platform leverages artificial intelligence to assist healthcare professionals in predicting the risk and potential relapse of critical metabolic and genetic disorders. It supports early diagnosis, clinical decision-making, and patient tracking through smart analytics.
-                    </p>
-                    <ul>
-                        <li><i class="fa fa-check-circle"></i> Predicts diseases like Hyperthyroidism, PKU, MSUD, and more</li>
-                        <li><i class="fa fa-check-circle"></i> Supports patient risk stratification and relapse detection</li>
-                        <li><i class="fa fa-check-circle"></i> Secure, data-driven clinical insights with intuitive dashboard</li>
-                    </ul>
-                    <a href="{% url 'feedback' %}" class="primary-btn normal-btn">Contact Us</a>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-md-6">
+            <img src="https://img.icons8.com/ios-filled/200/car-crash.png" 
+                 class="img-fluid rounded mx-auto d-block" alt="Accident Detection">
+        </div>
+        <div class="col-md-6">
+            <p>
+                The <strong>IoT-based Accident Detection System</strong> is designed to monitor real-time
+                vehicle conditions using sensors such as:
+            </p>
+            <ul>
+                <li><strong>ADXL345:</strong> Detects impact in X, Y, Z axes.</li>
+                <li><strong>Ultrasonic Sensor:</strong> Measures obstacles or sudden distance changes.</li>
+                <li><strong>Vibration Sensor:</strong> Detects shocks or sudden movements.</li>
+            </ul>
+            <p>
+                When an accident is detected, the system records the data, sends it to a central server,
+                and alerts predefined recipients via email. This system helps in rapid response to accidents
+                and ensures vehicle safety monitoring.
+            </p>
         </div>
     </div>
-</section>
-<!-- About Section End -->
+
+    <hr class="my-4">
+
+    <h4 class="text-center mb-3">Features</h4>
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <i class="fas fa-bolt fa-2x mb-2"></i>
+            <h5>Real-time Monitoring</h5>
+            <p>Continuously monitors impact, vibration, and distance in vehicles.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <i class="fas fa-envelope fa-2x mb-2"></i>
+            <h5>Accident Alerts</h5>
+            <p>Sends instant notifications to emergency contacts when an accident occurs.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <i class="fas fa-chart-line fa-2x mb-2"></i>
+            <h5>Data Analytics</h5>
+            <p>Stores sensor readings for analysis, visualization, and reporting.</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
