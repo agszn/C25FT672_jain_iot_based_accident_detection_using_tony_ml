@@ -34,14 +34,14 @@ def sensor_data(request):
             )
 
             # Send email if accident
-            if prediction == 1:
-                send_mail(
-                    'Accident Alert!',
-                    f'Accident detected!\nImpact: {impact}\nVibration: {vibration}\nDistance: {distance}',
-                    settings.EMAIL_HOST_USER,
-                    settings.ACCIDENT_ALERT_RECIPIENTS,
-                    fail_silently=True,
-                )
+            # if prediction == 1:
+            #     send_mail(
+            #         'Accident Alert!',
+            #         f'Accident detected!\nImpact: {impact}\nVibration: {vibration}\nDistance: {distance}',
+            #         settings.EMAIL_HOST_USER,
+            #         settings.ACCIDENT_ALERT_RECIPIENTS,
+            #         fail_silently=True,
+            #     )
 
             return JsonResponse({
                 "impact": impact,
@@ -115,4 +115,5 @@ def data_analytics(request):
     }
 
     return render(request, "dashboard/dashboard.html", context)
+
 
