@@ -40,7 +40,7 @@ def sensor_data(request):
                     f'Accident detected!\nImpact: {impact}\nVibration: {vibration}\nDistance: {distance}',
                     settings.EMAIL_HOST_USER,
                     settings.ACCIDENT_ALERT_RECIPIENTS,
-                    fail_silently=False,
+                    fail_silently=True,
                 )
 
             return JsonResponse({
@@ -115,3 +115,4 @@ def data_analytics(request):
     }
 
     return render(request, "dashboard/dashboard.html", context)
+
