@@ -78,7 +78,9 @@
                         Dashboard
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'dashboard' %}">ML History</a></li>
+                        <li><a class="dropdown-item" href="{% url 'data_analytics' %}">Fetch</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sensor_dashboard' %}">Data</a></li>
+                        <li><a class="dropdown-item" href="{% url 'data_analytics' %}">Dashboard</a></li>
                     </ul>
                 </li>
             </ul>
@@ -133,3 +135,4 @@
 {% block extra_js %}{% endblock %}
 </body>
 </html>
+
