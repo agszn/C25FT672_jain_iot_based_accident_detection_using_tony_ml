@@ -118,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -169,4 +169,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ----------------------------
 # SERPAPI CONFIG
 # ----------------------------
+
 SERPAPI_KEY = "b41dbdc49911e12f6a4338e6a69aa70b11911e98c117e2ca636e58f3fce6c9aa"
