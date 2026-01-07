@@ -1,157 +1,99 @@
 {% extends "base.html" %}
-{% load static %}
+
+{% block title %}Data Analytics{% endblock %}
 
 {% block content %}
-<div class="container mt-5 dashboard-container">
+<div class="container mt-4">
+    <h2 class="text-center mb-4">IoT Accident Data Analytics</h2>
 
-  <!-- Greeting -->
-  <div class="text-center mb-4">
-    <h3>Hello, {{ request.user.username|title }} 👋</h3>
-    <p class="text-muted">Here is your recent prediction history</p>
-  </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-light mb-3">
+                <div class="card-body">
+                    <h5>Total Readings</h5>
+                    <p class="fs-4">{{ total_readings }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-light mb-3">
+                <div class="card-body">
+                    <h5>Accidents</h5>
+                    <p class="fs-4 text-danger">{{ accident_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-light mb-3">
+                <div class="card-body">
+                    <h5>Average Impact</h5>
+                    <p class="fs-4">{{ avg_impact|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-light mb-3">
+                <div class="card-body">
+                    <h5>Average Distance</h5>
+                    <p class="fs-4">{{ avg_distance|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <!-- Model Metrics  -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card shadow-sm h-100">
+    <!-- Chart -->
+    <div class="card mb-4">
         <div class="card-body">
-          <div class="text-muted small">Model</div>
-          <div class="fw-semibold">{{ metrics.model_name|default:"CardioNet" }}</div>
-          <div class="text-muted small mt-1">Trained on: {{ metrics.trained_on|default:"2025-09-01" }}</div>
-          <div class="text-muted small">Samples: {{ metrics.n_samples|default:"1200" }}</div>
-          <div class="text-muted small">Features: {{ metrics.n_features|default:"25" }}</div>
+            <canvas id="sensorChart" height="120"></canvas>
         </div>
-      </div>
     </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column justify-content-center">
-          <div class="text-muted small">Accuracy</div>
-          <div class="display-6">{{ metrics.accuracy|default:"92.3" }}</div>
-          <span class="badge bg-success-subtle text-success mt-2">Overall</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column justify-content-center">
-          <div class="text-muted small">ROC AUC</div>
-          <div class="display-6">{{ metrics.roc_auc|default:"92.7" }}</div>
-          <span class="badge bg-primary-subtle text-primary mt-2">Discrimination</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column justify-content-center">
-          <div class="text-muted small">F1 (macro)</div>
-          <div class="display-6">{{ metrics.f1_macro|default:"91.9" }}</div>
-          <span class="badge bg-info-subtle text-info mt-2">Balance</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <!-- Chart.js -->
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-  // Pull whatever the server printed (may be empty/invalid), then parse with fallback.
-  function parseOr(defaultVal, raw) {
-    try {
-      if (!raw || !raw.trim()) return defaultVal;
-      return JSON.parse(raw);
-    } catch (e) {
-      return defaultVal;
+const ctx = document.getElementById('sensorChart').getContext('2d');
+const sensorChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ timestamps|safe }},
+        datasets: [
+            {
+                label: 'Impact (m/s²)',
+                data: {{ impact_values|safe }},
+                borderColor: 'red',
+                backgroundColor: 'rgba(255,0,0,0.2)',
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Distance (cm)',
+                data: {{ distance_values|safe }},
+                borderColor: 'blue',
+                backgroundColor: 'rgba(0,0,255,0.2)',
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Vibration',
+                data: {{ vibration_values|safe }},
+                borderColor: 'green',
+                backgroundColor: 'rgba(0,255,0,0.2)',
+                tension: 0.3,
+                fill: true
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Sensor Readings Over Time' }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
     }
-  }
-
-  // NOTE: no |default on arrays; only escape to keep JS valid even if empty.
-  const distLabels   = parseOr(["Positive","Negative"], `{{ dist_labels|safe|escapejs }}`);
-  const distValues   = parseOr([92, 8],                  `{{ dist_values|safe|escapejs }}`);
-  const historyTimes = parseOr(["Day 1","Day 2","Day 3","Day 4"], `{{ history_times|safe|escapejs }}`);
-  const historyConf  = parseOr([91.8, 92.2, 92.5, 92.0], `{{ history_conf|safe|escapejs }}`);
-  const probLabels   = parseOr(["Class A","Class B","Class C"], `{{ last_labels|safe|escapejs }}`);
-  const probValues   = parseOr([92.1, 91.7, 92.3],       `{{ last_probs|safe|escapejs }}`);
-
-  const grid  = { color: 'rgba(0,0,0,0.08)' };
-  const ticks = { color: 'rgba(0,0,0,0.6)' };
-  const palette = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc949','#af7aa1','#ff9da7','#9c755f','#bab0ab'];
-
-  // Doughnut: class distribution
-  (function() {
-    const el = document.getElementById('distChart');
-    if (!el || !Array.isArray(distLabels) || !distLabels.length) return;
-    new Chart(el, {
-      type: 'doughnut',
-      data: {
-        labels: distLabels,
-        datasets: [{
-          data: distValues,
-          backgroundColor: distLabels.map((_, i) => palette[i % palette.length])
-        }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ position:'bottom' } },
-        cutout:'60%'
-      }
-    });
-  })();
-
-  // Line: confidence over time
-  (function() {
-    const el = document.getElementById('confChart');
-    if (!el || !Array.isArray(historyTimes) || !historyTimes.length) return;
-    new Chart(el, {
-      type: 'line',
-      data: {
-        labels: historyTimes,
-        datasets: [{
-          label:'Confidence (%)',
-          data: historyConf,
-          tension:0.25,
-          pointRadius:2,
-          borderWidth:2
-        }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        scales: {
-          y: { min:0, max:100, ticks:{ callback:v => v + '%', ...ticks }, grid },
-          x: { ticks, grid }
-        },
-        plugins:{ legend:{ display:false } }
-      }
-    });
-  })();
-
-  // Bar: last prediction per-class probability
-  (function() {
-    const el = document.getElementById('probChart');
-    if (!el || !Array.isArray(probLabels) || !probLabels.length) return;
-    new Chart(el, {
-      type: 'bar',
-      data: {
-        labels: probLabels,
-        datasets: [{
-          label:'Probability (%)',
-          data: probValues,
-          backgroundColor: probLabels.map((_, i) => palette[i % palette.length])
-        }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        scales: {
-          y: { min:0, max:100, ticks:{ callback:v => v + '%', ...ticks }, grid },
-          x: { ticks, grid }
-        },
-        plugins:{ legend:{ display:false } }
-      }
-    });
-  })();
+});
 </script>
-
 {% endblock %}
