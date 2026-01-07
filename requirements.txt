@@ -8,4 +8,5 @@ opencv-python
 scikit-learn
 pandas
 whitenoise
+djangorestframework
 gunicorn
